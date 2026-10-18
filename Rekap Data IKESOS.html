@@ -1,0 +1,366 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Rekap Data IKESOS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: lembar kerja data. Header ringkas, tab, lalu daftar butir data yang dikelompokkan per dimensi/variabel/indikator. */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#16222d; --muted:#5b6a78; --line:#dce2e8; --soft:#eaf0f4;
+  --accent:#0d6676; --accent-ink:#ffffff; --accent-soft:#dcedf0;
+  --ok:#2a7a4b; --ok-soft:#e0f1e6; --warn:#a85f00; --warn-soft:#fbeed7; --bad:#b3372c; --bad-soft:#f8e1de;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10181f; --surface:#17222b; --ink:#e6edf2; --muted:#98a8b6; --line:#2a3945; --soft:#1e2c37;
+  --accent:#5cc0d0; --accent-ink:#06222a; --accent-soft:#17333b;
+  --ok:#63c98b; --ok-soft:#1a3326; --warn:#f0b35a; --warn-soft:#3a2d14; --bad:#f08a7e; --bad-soft:#3b1e1b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10181f; --surface:#17222b; --ink:#e6edf2; --muted:#98a8b6; --line:#2a3945; --soft:#1e2c37;
+  --accent:#5cc0d0; --accent-ink:#06222a; --accent-soft:#17333b;
+  --ok:#63c98b; --ok-soft:#1a3326; --warn:#f0b35a; --warn-soft:#3a2d14; --bad:#f08a7e; --bad-soft:#3b1e1b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;
+  padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1{font-size:22px;font-weight:600;letter-spacing:-.01em}
+h2{font-size:15px;font-weight:600}
+.top{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;justify-content:space-between}
+.top .sub{color:var(--muted);margin-top:2px}
+.meta{display:flex;gap:10px;flex-wrap:wrap}
+label.f{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+input,select,textarea,button{font:inherit;color:inherit}
+input[type=text],input[type=search],select{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 9px;min-width:0;width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+input:disabled,select:disabled{opacity:.6}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:9px 14px;cursor:pointer;color:var(--muted);font-weight:500;white-space:nowrap}
+.tabs button[aria-selected=true]{color:var(--accent);border-bottom-color:var(--accent)}
+.panel[hidden]{display:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px}
+.grid{display:grid;gap:14px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.big{font-family:var(--mono);font-size:30px;font-weight:500;letter-spacing:-.02em}
+.big small{font-size:14px;color:var(--muted);font-weight:400}
+.lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.bar{height:8px;border-radius:4px;background:var(--soft);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .3s}
+.bar.okbar i{background:var(--ok)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;background:var(--soft)}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-align:left;text-decoration:underline;text-underline-offset:2px}
+.notes ol{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:3px}
+.filters{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));align-items:end}
+.count{color:var(--muted);font-size:13px}
+.dimh{font-size:13px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;padding:18px 0 6px;border-bottom:2px solid var(--accent)}
+.varh{font-weight:600;padding:14px 0 4px}
+.indh{color:var(--muted);font-size:13px;padding:0 0 6px}
+.row{display:grid;grid-template-columns:minmax(0,1.5fr) 150px minmax(0,1.2fr);gap:10px 16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row .info{min-width:0}
+.row .item{font-weight:500}
+.row .rinc{color:var(--muted);font-size:13px;margin-top:2px;overflow-wrap:anywhere}
+.row .src{font-size:12px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+.row .ket{font-size:12px;color:var(--warn);margin-top:3px;overflow-wrap:anywhere}
+.val{font-family:var(--mono);text-align:right}
+.ev{display:flex;flex-direction:column;gap:6px;min-width:0}
+.chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.chip{font-size:11px;padding:1px 7px;border-radius:10px;background:var(--soft);color:var(--muted);font-weight:500}
+.chip.ok{background:var(--ok-soft);color:var(--ok)} .chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.bad{background:var(--bad-soft);color:var(--bad)}
+.stat{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:6px;padding:8px 14px;font-weight:500;cursor:pointer}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.banner{padding:10px 14px;border-radius:8px;background:var(--warn-soft);color:var(--warn)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;z-index:20}
+@media (max-width:720px){.row{grid-template-columns:1fr}.val{text-align:left}.big{font-size:26px}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Rekap Data IKESOS</h1>
+      <div class="sub">Form input data indeks kesejahteraan sosial untuk Umum, Disabilitas, dan Lansia</div>
+    </div>
+    <div class="meta">
+      <label class="f">Kabupaten/Kota<input type="text" id="wilayah" placeholder="Nama kab/kota"></label>
+      <label class="f">Tahun data<input type="text" id="tahun" placeholder="2025" inputmode="numeric" style="width:90px"></label>
+    </div>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <nav class="tabs" role="tablist" aria-label="Bagian">
+    <button role="tab" aria-selected="true" data-tab="ringkasan">Ringkasan</button>
+    <button role="tab" aria-selected="false" data-tab="input">Input data</button>
+    <button role="tab" aria-selected="false" data-tab="opd">Rekap per OPD</button>
+    <button role="tab" aria-selected="false" data-tab="hasil">Hasil hitung</button>
+  </nav>
+
+  <section class="panel" id="p-ringkasan">
+    <div class="grid g3" id="cards"></div>
+    <div style="height:14px"></div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+      <div class="card notes">
+        <h2>Petunjuk pengisian</h2>
+        <ol>
+          <li>Isi kolom nilai dan tempel link bukti (evidence) pada setiap butir.</li>
+          <li>Masukkan nilai saja, tanpa satuan.</li>
+          <li>Nilai ribuan tanpa titik (.) dan tanpa koma (,).</li>
+          <li>Jumlah penduduk memakai data BPS.</li>
+          <li>Lansia berusia 60 tahun ke atas.</li>
+          <li>Anak berusia 0 sampai 18 tahun.</li>
+          <li>Butir Ya/Tidak: pilih Ya untuk angka 1, Tidak untuk angka 0.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h2>Perlu dilengkapi lebih dulu</h2>
+        <div id="todo" style="margin-top:8px"></div>
+      </div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="export">Unduh rekap (CSV)</button>
+    </div>
+  </section>
+
+  <section class="panel" id="p-input" hidden>
+    <div class="card" style="margin-bottom:12px">
+      <div class="filters">
+        <label class="f">Cari<input type="search" id="q" placeholder="Kata kunci butir"></label>
+        <label class="f">Dimensi<select id="fd"></select></label>
+        <label class="f">Variabel<select id="fv"></select></label>
+        <label class="f">Sumber data (OPD)<select id="fs"></select></label>
+        <label class="f">Status<select id="ft">
+          <option value="">Semua status</option><option value="belum">Belum diisi</option>
+          <option value="terisi">Sudah diisi</option><option value="nobukti">Terisi, tanpa bukti</option></select></label>
+      </div>
+      <div class="count" id="count" style="margin-top:10px"></div>
+    </div>
+    <div id="list"></div>
+  </section>
+
+  <section class="panel" id="p-opd" hidden>
+    <p class="count" style="margin:0 0 10px">Butir dikelompokkan menurut sumber data. Pilih sumber untuk melihat butirnya.</p>
+    <div class="tablewrap"><table><thead><tr><th>Sumber data</th><th class="n">Butir</th><th class="n">Terisi</th><th class="n">Ada bukti</th><th style="width:22%">Kemajuan</th></tr></thead><tbody id="opdbody"></tbody></table></div>
+  </section>
+
+  <section class="panel" id="p-hasil" hidden>
+    <p class="count" style="margin:0 0 10px">Hitungan bantu dari nilai yang sudah diisi. Butir persentase dihitung pembilang dibagi penyebut dikali 100. Angka resmi tetap mengikuti pedoman IKESOS.</p>
+    <div class="tablewrap"><table><thead><tr><th>Indikator</th><th>Sasaran</th><th class="n">Pembilang</th><th class="n">Penyebut</th><th class="n">Hasil</th></tr></thead><tbody id="hasilbody"></tbody></table></div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const ROWS=[{"id":"KD5","dim":"Kebutuhan Dasar","bob":"","v":"Pangan","ind":"Ketahanan Pangan","item":"Indeks Ketahanan Pangan","rinc":"Indeks","yn":false,"t":"UDL","src":"Badan Pangan Nasional (BPN)","ket":"","g":1},{"id":"KD6","dim":"Kebutuhan Dasar","bob":"","v":"Pangan","ind":"Ketercukupan Gizi","item":"Rata-rata Konsumsi Protein per Kapita","rinc":"gram (gr)","yn":false,"t":"UDL","src":"BPS kab/kota atau BPS Provinsi atau BPS Nasional","ket":"Standar maksimal : 57","g":2},{"id":"KD7","dim":"Kebutuhan Dasar","bob":"","v":"Pangan","ind":"Ketercukupan Gizi","item":"Prevalence of Undernourishment (PoU)","rinc":"%","yn":false,"t":"UDL","src":"BPS kab/kota atau BPS Provinsi atau BPS Nasional","ket":"","g":3},{"id":"KD8","dim":"Kebutuhan Dasar","bob":"","v":"Papan","ind":"Air minum layak","item":"Persentase rumah tangga yang memiliki akses terhadap air minum layak","rinc":"%","yn":false,"t":"UDL","src":"BPS kab/kota atau BPS Provinsi atau BPS Nasional","ket":"","g":4},{"id":"KD9","dim":"Kebutuhan Dasar","bob":"","v":"Kesehatan","ind":"Derajat Kesehatan","item":"Prevalensi Stunting","rinc":"%","yn":false,"t":"UDL","src":"Data SSGI","ket":"","g":5},{"id":"KD10","dim":"Kebutuhan Dasar","bob":"","v":"Kesehatan","ind":"Akses Layanan Kesehatan","item":"Rasio puskesmas terhadap jumlah penduduk","rinc":"Jumlah Puskesmas","yn":false,"t":"UDL","src":"Dinas Kesehatan / Dokumen Potensi Desa","ket":"Hanya puskesmas, tidak termasuk Puskesmas Pembantu","g":6},{"id":"KD11","dim":"Kebutuhan Dasar","bob":"","v":"Kesehatan","ind":"Akses Layanan Kesehatan","item":"Rasio puskesmas terhadap jumlah penduduk","rinc":"Jumlah Penduduk","yn":false,"t":"UDL","src":"BPS kab/kota atau BPS Provinsi atau BPS Nasional","ket":"Jumlah penduduk sama untuk 3 sasaran (populasi Kab/Kota)","g":6},{"id":"KD12","dim":"Kebutuhan Dasar","bob":"","v":"Jaminan Sosial","ind":"Kepemilikan Jaminan Sosial","item":"Kepesertaan BPJS Ketenagakerjaan","rinc":"%","yn":false,"t":"UDL","src":"BPJS Ketenagakerjaan/ Dinas Ketenagakerjaan","ket":"","g":7},{"id":"KD13","dim":"Kebutuhan Dasar","bob":"","v":"Rasa Aman","ind":"Keamanan Lingkungan","item":"Indeks Risiko Bencana","rinc":"Indeks","yn":false,"t":"UDL","src":"InaRISK (BNPB)","ket":"Ambil nilai pada web InaRISK","g":8},{"id":"KD14","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Aksesibilitas Lingkungan Fisik","item":"Persentase prasarana umum yang mendukung aksesibilitas disabilitas dan lansia","rinc":"Jumlah Unit Layanan Pemerintah yang memiliki prasarana umum yang mendukung aksesibilitas Lansia dan Disabilitas","yn":false,"t":"U","src":"Unit Layanan Pemerintah pada data Aset BPKAD, contoh: | 1. Gedung layanan pada pemerintahan (OPD), kecamatan, kelurahan, Mall Pelayanan Publik | 2. Layanan Kesehatan (RS & Puskesmas) | 3. Layanan Pendidikan (TK, SD, SMP, SMA, Kesetaraan)","ket":"Contoh: Terdapat bidang miring/ jalan (Ramp), kursi khusus lansia & disabilitas, toilet disabilitas, parkir khusus disabilitas, guiding block (jalur pemandu), hand-railing (pegangan), dsb","g":9},{"id":"KD15","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Aksesibilitas Lingkungan Fisik","item":"Persentase prasarana umum yang mendukung aksesibilitas disabilitas dan lansia","rinc":"Jumlah Unit Layanan Pemerintah","yn":false,"t":"U","src":"data aset gedung dari BPKAD","ket":"","g":9},{"id":"KD16","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Aksesibilitas Lingkungan Fisik","item":"Persentase prasarana umum yang mendukung aksesibilitas lansia","rinc":"Jumlah Unit Layanan Pemerintah yang memiliki prasarana umum yang mendukung aksesibilitas Lansia","yn":false,"t":"L","src":"Unit Layanan Pemerintah pada data Aset BPKAD, contoh: | 1. Gedung layanan pada pemerintahan (OPD), kecamatan, kelurahan, Mall Pelayanan Publik | 2. Layanan Kesehatan (RS & Puskesmas) | 3. Layanan Pendidikan (TK, SD, SMP, SMA, Kesetaraan)","ket":"Contoh: Tangga Ramp (miring), kursi khusus lansia, hand-railing (pegangan), dsb","g":10},{"id":"KD17","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Aksesibilitas Lingkungan Fisik","item":"Persentase prasarana umum yang mendukung aksesibilitas lansia","rinc":"Jumlah Unit Layanan Pemerintah","yn":false,"t":"L","src":"data aset gedung dari BPKAD","ket":"","g":10},{"id":"KD18","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Aksesibilitas Lingkungan Fisik","item":"Persentase prasarana umum yang mendukung aksesibilitas disabilitas","rinc":"Jumlah Unit Layanan Pemerintah yang memiliki prasarana umum yang mendukung aksesibilitas disabilitas","yn":false,"t":"D","src":"Unit Layanan Pemerintah pada data Aset BPKAD, contoh: | 1. Gedung layanan pada pemerintahan (OPD), kecamatan, kelurahan, Mall Pelayanan Publik | 2. Layanan Kesehatan (RS & Puskesmas) | 3. Layanan Pendidikan (TK, SD, SMP, SMA, Kesetaraan)","ket":"Contoh: Tangga Ramp (miring), kursi khusus disabilitas, toilet disabilitas, parkir khusus disabilitas, guiding block (jalur pemandu), hand-railing (pegangan), dsb","g":11},{"id":"KD19","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Aksesibilitas Lingkungan Fisik","item":"Persentase prasarana umum yang mendukung aksesibilitas disabilitas","rinc":"Jumlah Unit Layanan Pemerintah","yn":false,"t":"D","src":"data aset gedung dari BPKAD","ket":"","g":11},{"id":"KD20","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Ketersediaan Alat Bantu Mobilitas","item":"Persentase sarana umum yang mendukung alat bantu mobilitas disabilitas dan lansia","rinc":"Jumlah Unit Layanan Pemerintah yang telah memiliki sarana umum yang mendukung alat bantu mobilitas Lansia dan Disabilitas","yn":false,"t":"U","src":"Unit Layanan Pemerintah pada data Aset BPKAD, contoh: | 1. Gedung layanan pada pemerintahan (OPD), kecamatan, kelurahan, Mall Pelayanan Publik | 2. Layanan Kesehatan (RS & Puskesmas) | 3. Layanan Pendidikan (TK, SD, SMP, SMA, Kesetaraan)","ket":"Contoh: memiliki kursi roda, alat bantu dengar, tongkat jalan, buku panduan dengan tulisan braille, kaki/ tangan palsu, kruk dsb","g":12},{"id":"KD21","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Ketersediaan Alat Bantu Mobilitas","item":"Persentase sarana umum yang mendukung alat bantu mobilitas disabilitas dan lansia","rinc":"Jumlah Unit Layanan Pemerintah","yn":false,"t":"U","src":"data aset gedung dari BPKAD","ket":"","g":12},{"id":"KD22","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Ketersediaan Alat Bantu Mobilitas","item":"Persentase sarana umum yang mendukung alat bantu mobilitas lansia","rinc":"Jumlah Unit Layanan Pemerintah yang telah memiliki sarana umum yang mendukung alat bantu mobilitas Lansia","yn":false,"t":"L","src":"Unit Layanan Pemerintah pada data Aset BPKAD, contoh: | 1. Gedung layanan pada pemerintahan (OPD), kecamatan, kelurahan, Mall Pelayanan Publik | 2. Layanan Kesehatan (RS & Puskesmas) | 3. Layanan Pendidikan (TK, SD, SMP, SMA, Kesetaraan)","ket":"Contoh: memiliki kursi roda, tongkat jalan, kruk, alat bantu dengar dsb","g":13},{"id":"KD23","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Ketersediaan Alat Bantu Mobilitas","item":"Persentase sarana umum yang mendukung alat bantu mobilitas lansia","rinc":"Jumlah Unit Layanan Pemerintah","yn":false,"t":"L","src":"data aset gedung dari BPKAD","ket":"","g":13},{"id":"KD24","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Ketersediaan Alat Bantu Mobilitas","item":"Persentase sarana umum yang mendukung alat bantu mobilitas disabilitas","rinc":"Jumlah Unit Layanan Pemerintah yang telah memiliki sarana umum yang mendukung alat bantu mobilitas disabilitas","yn":false,"t":"D","src":"Unit Layanan Pemerintah pada data Aset BPKAD, contoh: | 1. Gedung layanan pada pemerintahan (OPD), kecamatan, kelurahan, Mall Pelayanan Publik | 2. Layanan Kesehatan (RS & Puskesmas) | 3. Layanan Pendidikan (TK, SD, SMP, SMA, Kesetaraan)","ket":"Contoh: memiliki kursi roda, alat bantu dengar, tongkat jalan, buku panduan dengan tulisan braille, kaki/ tangan palsu, dsb","g":14},{"id":"KD25","dim":"Kebutuhan Dasar","bob":"","v":"Physical Mobility","ind":"Ketersediaan Alat Bantu Mobilitas","item":"Persentase sarana umum yang mendukung alat bantu mobilitas disabilitas","rinc":"Jumlah Unit Layanan Pemerintah","yn":false,"t":"D","src":"data aset gedung dari BPKAD","ket":"","g":14},{"id":"PS4","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keikutsertan","item":"Terdapat keterwakilan pada kelompok rentan sosial (minimal 4 kelompok rentan) dalam forum perencanaan pembangunan Musrenbang RKPD (kelompok rentan: forum anak, forum perempuan/gender, forum lansia, forum penyandang disabilitas, dan kelompok rentan lainnya)","rinc":"Ya / Tidak","yn":true,"t":"U","src":"Presensi Forum Perencanaan Pembangunan (Musrenbang RKPD) Dari Bappeda","ket":"Musrenbang RKPD yang dimaksud adalah Musrenbang RKPD Tahun 2025 yang dilaksanakan pada tahun 2024","g":15},{"id":"PS5","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keikutsertan","item":"Keterwakilan masyarakat rentan sosial yang ikut dalam forum perencanaan pembangunan Musrenbang RKPD (kelompok rentan: forum anak, forum perempuan/gender, forum lansia, forum penyandang disabilitas, dan kelompok rentan lainnya)","rinc":"Jumlah masyarakat rentan sosial yang ikut dalam forum perencanaan pembangunan Musrenbang RKPD (kelompok rentan: forum anak, forum perempuan/gender, forum lansia, forum penyandang disabilitas, dan kelompok rentan lainnya)","yn":false,"t":"U","src":"Presensi Forum Perencanaan Pembangunan (Musrenbang RKPD) Dari Bappeda","ket":"Satuan: Jiwa | Jika yang hadir adalah perwakilan maka tetap terhitung","g":16},{"id":"PS6","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keikutsertan","item":"Keterwakilan masyarakat rentan sosial yang ikut dalam forum perencanaan pembangunan Musrenbang RKPD (kelompok rentan: forum anak, forum perempuan/gender, forum lansia, forum penyandang disabilitas, dan kelompok rentan lainnya)","rinc":"Jumlah peserta forum perencanaan pembangunan dalam setahun (Musrenbang RKPD)","yn":false,"t":"U","src":"Presensi Forum Perencanaan Pembangunan (Musrenbang RKPD) Dari Bappeda","ket":"Satuan: Jiwa","g":16},{"id":"PS7","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keikutsertan","item":"Terdapat kelompok Lansia yang ikut dalam forum perencanaan pembangunan dalam setahun Musrenbang RKPD","rinc":"Ya / Tidak","yn":true,"t":"L","src":"Presensi Forum Perencanaan Pembangunan (Musrenbang RKPD) Dari Bappeda","ket":"Musrenbang RKPD yang dimaksud adalah Musrenbang RKPD Tahun 2025 yang dilaksanakan pada tahun 2024","g":17},{"id":"PS8","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keikutsertan","item":"Keterwakilan Kelompok Lansia dalam forum perencanaan pembangunan dalam setahun Musrenbang RKPD","rinc":"Jumlah Perwakilan kelompok Lansia yang ikut dalam forum perencanaan pembangunan dalam setahun Musrenbang RKPD","yn":false,"t":"L","src":"Presensi Forum Perencanaan Pembangunan (Musrenbang RKPD) Dari Bappeda","ket":"Satuan: Jiwa","g":18},{"id":"PS9","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keikutsertan","item":"Keterwakilan Kelompok Lansia dalam forum perencanaan pembangunan dalam setahun Musrenbang RKPD","rinc":"Jumlah peserta forum perencanaan pembangunan dalam setahun Musrenbang RKPD","yn":false,"t":"L","src":"Presensi Forum Perencanaan Pembangunan (Musrenbang RKPD) Dari Bappeda","ket":"Satuan: Jiwa","g":18},{"id":"PS10","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keikutsertan","item":"Terdapat kelompok Disabilitas yang ikut dalam forum perencanaan pembangunan dalam setahun Musrenbang RKPD","rinc":"Ya / Tidak","yn":true,"t":"D","src":"Presensi Forum Perencanaan Pembangunan (Musrenbang RKPD) Dari Bappeda","ket":"Musrenbang RKPD yang dimaksud adalah Musrenbang RKPD Tahun 2025 yang dilaksanakan pada tahun 2024","g":19},{"id":"PS11","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keikutsertan","item":"Keterwakilan Kelompok disabilitas dalam forum perencanaan pembangunan dalam setahun Musrenbang RKPD","rinc":"Jumlah Penyandang Disabilitas yang ikut dalam forum perencanaan pembangunan dalam setahun Musrenbang RKPD","yn":false,"t":"D","src":"Presensi Forum Perencanaan Pembangunan (Musrenbang RKPD) Dari Bappeda","ket":"Satuan: Jiwa","g":20},{"id":"PS12","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keikutsertan","item":"Keterwakilan Kelompok disabilitas dalam forum perencanaan pembangunan dalam setahun Musrenbang RKPD","rinc":"Jumlah peserta forum perencanaan pembangunan dalam setahun Musrenbang RKPD","yn":false,"t":"D","src":"Presensi Forum Perencanaan Pembangunan (Musrenbang RKPD) Dari Bappeda","ket":"Satuan: Jiwa","g":20},{"id":"PS13","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keputusan","item":"Terdapat Keterwakilan Kelompok Rentan Sosial (minimal 4 kelompok rentan) yang memberikan saran/ masukan dalam forum Musrenbang RKPD","rinc":"Ya / Tidak","yn":true,"t":"U","src":"Presensi Forum Perencanaan Pembangunan (Musrenbang RKPD) Dari Bappeda","ket":"Musrenbang RKPD yang dimaksud adalah Musrenbang RKPD Kabupaten","g":21},{"id":"PS14","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keputusan","item":"Keterwakilan masyarakat rentan sosial yang memberikan saran/ masukan dalam forum Musrenbang RKPD (kelompok rentan: forum anak, forum perempuan/gender, forum lansia, forum penyandang disabilitas, dan kelompok rentan lainnya)","rinc":"Jumlah masyarakat rentan sosial yang memberikan saran/ masukan dalam forum Musrenbang RKPD (kelompok rentan: forum anak, forum perempuan/gender, forum lansia, forum penyandang disabilitas.","yn":false,"t":"U","src":"Berita Acara / Notulensi Dari Bappeda","ket":"Satuan: Jiwa","g":22},{"id":"PS15","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keputusan","item":"Keterwakilan masyarakat rentan sosial yang memberikan saran/ masukan dalam forum Musrenbang RKPD (kelompok rentan: forum anak, forum perempuan/gender, forum lansia, forum penyandang disabilitas, dan kelompok rentan lainnya)","rinc":"Jumlah peserta forum perencanaan pembangunan dalam setahun Musrenbang RKPD","yn":false,"t":"U","src":"Berita Acara / Notulensi Dari Bappeda","ket":"Satuan: Jiwa","g":22},{"id":"PS16","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keputusan","item":"Terdapat Kelompok Lansia yang memberikan saran/ masukan dalam forum Musrenbang RKPD","rinc":"Ya / Tidak","yn":true,"t":"L","src":"Berita Acara / Notulensi Dari Bappeda","ket":"Musrenbang RKPD yang dimaksud adalah Musrenbang RKPD Tahun 2025 yang dilaksanakan pada tahun 2024","g":23},{"id":"PS17","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keputusan","item":"Keterwakilan Kelompok Lansia yang memberikan saran/ masukan dalam forum Musrenbang RKPD","rinc":"Jumlah perwakilan kelompok Lansia yang memberikan saran/ masukan dalam forum Musrenbang RKPD","yn":false,"t":"L","src":"Berita Acara / Notulensi Dari Bappeda","ket":"Satuan: Jiwa","g":24},{"id":"PS18","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keputusan","item":"Keterwakilan Kelompok Lansia yang memberikan saran/ masukan dalam forum Musrenbang RKPD","rinc":"Jumlah peserta forum perencanaan pembangunan dalam setahun Musrenbang RKPD","yn":false,"t":"L","src":"Berita Acara / Notulensi Dari Bappeda","ket":"Satuan: Jiwa","g":24},{"id":"PS19","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keputusan","item":"Terdapat kelompok Disabilitas yang memberikan saran/ masukan dalam forum Musrenbang RKPD","rinc":"Ya / Tidak","yn":true,"t":"D","src":"Berita Acara / Notulensi Dari Bappeda","ket":"Musrenbang RKPD yang dimaksud adalah Musrenbang RKPD Tahun 2025 yang dilaksanakan pada tahun 2024","g":25},{"id":"PS20","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keputusan","item":"Keterwakilan Kelompok Disabilitas memberikan saran/ masukan dalam forum Musrenbang RKPD","rinc":"Jumlah Penyandang Disabilitas yang memberikan saran/ masukan dalam forum Musrenbang RKPD","yn":false,"t":"D","src":"Berita Acara / Notulensi Dari Bappeda","ket":"Satuan: Jiwa","g":26},{"id":"PS21","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Keputusan","item":"Keterwakilan Kelompok Disabilitas memberikan saran/ masukan dalam forum Musrenbang RKPD","rinc":"Jumlah peserta forum perencanaan pembangunan dalam setahun Musrenbang RKPD","yn":false,"t":"D","src":"Berita Acara / Notulensi Dari Bappeda","ket":"Satuan: Jiwa","g":26},{"id":"PS22","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Kontrol","item":"Terdapat kelompok/organisasi rentan sosial di Kab/Kota","rinc":"Ya / Tidak","yn":true,"t":"U","src":"Laporan Kelompok Organisasi","ket":"BAPPEDA, DINSOS, BANKESBANGPOL","g":27},{"id":"PS23","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Kontrol","item":"Rasio masyarakat rentan sosial (Lansia, Perempuan, penyandang disabilitas) yang masuk dalam parlemen (DPRD)","rinc":"Jumlah masyarakat dengan status rentan sosial (Lansia, Perempuan, penyandang disabilitas) yang menjadi anggota DPRD","yn":false,"t":"U","src":"Laporan Profil Anggota Dewan","ket":"SEKRETARIAT DPRD","g":28},{"id":"PS24","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Kontrol","item":"Rasio masyarakat rentan sosial (Lansia, Perempuan, penyandang disabilitas) yang masuk dalam parlemen (DPRD)","rinc":"Jumlah keseluruhan anggota DPRD","yn":false,"t":"U","src":"Profil Anggota DPRD","ket":"SEKRETARIAT DPRD","g":28},{"id":"PS25","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Kontrol","item":"Terdapat kelompok Lansia di Kab/Kota","rinc":"Ya / Tidak","yn":true,"t":"L","src":"Laporan Kelompok Organisasi","ket":"BAPPEDA, DINSOS, BANKESBANGPOL","g":29},{"id":"PS26","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Kontrol","item":"Rasio Lansia yang masuk dalam parlemen (DPRD)","rinc":"Jumlah Lansia yang masuk dalam parlemen (DPRD)","yn":false,"t":"L","src":"Laporan Profil Anggota Dewan","ket":"SEKRETARIAT DPRD","g":30},{"id":"PS27","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Kontrol","item":"Rasio Lansia yang masuk dalam parlemen (DPRD)","rinc":"Jumlah keseluruhan anggota DPRD","yn":false,"t":"L","src":"Profil Anggota DPRD","ket":"SEKRETARIAT DPRD","g":30},{"id":"PS28","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Kontrol","item":"Terdapat kelompok disabilitas di Kab/Kota","rinc":"Ya / Tidak","yn":true,"t":"D","src":"Laporan Kelompok Organisasi","ket":"BAPPEDA, DINSOS, BANKESBANGPOL","g":31},{"id":"PS29","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Kontrol","item":"Rasio disabilitas yang masuk dalam parlemen (DPRD)","rinc":"Jumlah Disabilitas yang masuk dalam parlemen (DPRD)","yn":false,"t":"D","src":"Laporan Profil Anggota Dewan","ket":"SEKRETARIAT DPRD","g":32},{"id":"PS30","dim":"Peranan Sosial","bob":"31%","v":"Partisipasi","ind":"Kontrol","item":"Rasio disabilitas yang masuk dalam parlemen (DPRD)","rinc":"Jumlah keseluruhan anggota DPRD","yn":false,"t":"D","src":"Profil Anggota DPRD","ket":"SEKRETARIAT DPRD","g":32},{"id":"PS31","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Relasi Sosial","item":"% masyarakat rentan sosial yang tergabung dalam organisasi masyarakat","rinc":"Jumlah kelompok rentan (lansia, disabilitas, perempuan, anak yang tergabung dalam organisasi masyarakat)","yn":false,"t":"U","src":"Laporan Anggota Kelompok Rentan","ket":"DINSOS","g":33},{"id":"PS32","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Relasi Sosial","item":"% masyarakat rentan sosial yang tergabung dalam organisasi masyarakat","rinc":"Jumlah PPKS di Kab/Kota","yn":false,"t":"U","src":"Laporan Data PPKS","ket":"DINSOS","g":33},{"id":"PS33","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Relasi Sosial","item":"% Lansia yang tergabung dalam organisasi masyarakat","rinc":"Jumlah Lansia yang tergabung dalam organisasi masyarakat/ komunitas Lansia","yn":false,"t":"L","src":"Laporan Lansia Yang Tergabung Pada Ormas/ Komunitas","ket":"DINSOS/ Kesbangpol","g":34},{"id":"PS34","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Relasi Sosial","item":"% Lansia yang tergabung dalam organisasi masyarakat","rinc":"Jumlah Lansia","yn":false,"t":"L","src":"Data Populasi Lansia","ket":"DTSEN","g":34},{"id":"PS35","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Relasi Sosial","item":"% disabilitas yang tergabung dalam organisasi masyarakat","rinc":"Jumlah disabilitas yang yang tergabung organisai masyarakat / Komunitas disabilitas","yn":false,"t":"D","src":"Laporan Disabilitas Yang Tergabung Pada Ormas/ Komunitas","ket":"DINSOS/ Kesbangpol","g":35},{"id":"PS36","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Relasi Sosial","item":"% disabilitas yang tergabung dalam organisasi masyarakat","rinc":"Jumlah disabilitas","yn":false,"t":"D","src":"Data Populasi Disabilitas","ket":"DTSEN","g":35},{"id":"PS37","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"% Kejadian kekerasan/ Bulliying terhadap masyarakat dengan status rentan sosial (Lansia, Perempuan, Anak, penyandang disabilitas)","rinc":"jumlah kejadian kekerasan/ bulliying terhadap masyarakat dengan status rentan sosial","yn":false,"t":"U","src":"Laporan Kekerasan (Lansia, Disabilitas, Perempuan, Anak)","ket":"POLRES/ DPPPA","g":36},{"id":"PS38","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"% Kejadian kekerasan/ Bulliying terhadap masyarakat dengan status rentan sosial (Lansia, Perempuan, Anak, penyandang disabilitas)","rinc":"Jumlah kejadian kekerasan/ bullying keseluruhan","yn":false,"t":"U","src":"Laporan Kekerasan / Bullying","ket":"POLRES/ DPPPA","g":36},{"id":"PS39","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"% Kejadian kekerasan/ Bulliying terhadap Lansia","rinc":"Jumlah kejadian kekerasan/ bullying terhadap Lansia","yn":false,"t":"L","src":"Laporan Kekerasan Lansia","ket":"POLRES","g":37},{"id":"PS40","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"% Kejadian kekerasan/ Bulliying terhadap Lansia","rinc":"Jumlah kejadian kekerasan/ bullying keseluruhan","yn":false,"t":"L","src":"Laporan Kekerasan / Bullying","ket":"POLRES","g":37},{"id":"PS41","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"% Kejadian kekerasan/ Bulliying terhadap disabilitas","rinc":"Jumlah kejadian kekerasan/ bullying terhadap Disabilitas","yn":false,"t":"D","src":"Laporan Kekerasan Penyandang Disabilitas","ket":"POLRES","g":38},{"id":"PS42","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"% Kejadian kekerasan/ Bulliying terhadap disabilitas","rinc":"Jumlah kejadian kekerasan/ bullying keseluruhan","yn":false,"t":"D","src":"Laporan Kekerasan / Bullying","ket":"POLRES","g":38},{"id":"PS43","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"% Masyarakat dengan status rentan sosial (Lansia, Anak, Gelandangan/Pengemis, penyandang disabilitas) terlantar yang memperoleh Rehabilitasi Sosial","rinc":"Jumlah masyarakat dengan status rentan sosial (Lansia, Anak, Gelandangan, penyandang disabilitas) terlantar yang memperoleh Rehabilitasi Sosial","yn":false,"t":"U","src":"Laporan Data SPM","ket":"DINSOS","g":39},{"id":"PS44","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"% Masyarakat dengan status rentan sosial (Lansia, Anak, Gelandangan/Pengemis, penyandang disabilitas) terlantar yang memperoleh Rehabilitasi Sosial","rinc":"Jumlah PPKS di Kab/Kota","yn":false,"t":"U","src":"Laporan Jumlah PPKS","ket":"DINSOS","g":39},{"id":"PS45","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"Persentase Masyarakat Lanjut Usia Terlantar yang memperoleh Rehabilitasi Sosial diluar Panti","rinc":"Jumlah Masyarakat Lanjut Usia Terlantar yang memperoleh Rehabilitasi Sosial diluar Panti","yn":false,"t":"L","src":"Laporan Data SPM","ket":"DINSOS","g":40},{"id":"PS46","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"Persentase Masyarakat Lanjut Usia Terlantar yang memperoleh Rehabilitasi Sosial diluar Panti","rinc":"Jumlah Lansia","yn":false,"t":"L","src":"Laporan Jumlah PPKS","ket":"DINSOS","g":40},{"id":"PS47","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"Persentase Masyarakat Penyandang Disabilitas Terlantar yang memperoleh Rehabilitasi Sosial diluar Panti","rinc":"Jumlah Masyarakat Penyandang Disabilitas Terlantar yang memperoleh Rehabilitasi Sosial diluar Panti","yn":false,"t":"D","src":"Laporan Data SPM","ket":"DINSOS","g":41},{"id":"PS48","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Keterhubungan","item":"Persentase Masyarakat Penyandang Disabilitas Terlantar yang memperoleh Rehabilitasi Sosial diluar Panti","rinc":"Jumlah Disabilitas","yn":false,"t":"D","src":"Laporan Jumlah PPKS","ket":"DINSOS","g":41},{"id":"PS49","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kepatuhan Sosial","item":"% Penurunan Angka kriminalitas dalam setahun","rinc":"Jumlah kejadian kriminalitas Tahun 2023","yn":false,"t":"U","src":"Laporan Angka Kriminalitas 2023","ket":"POLRES","g":42},{"id":"PS50","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kepatuhan Sosial","item":"% Penurunan Angka kriminalitas dalam setahun","rinc":"Jumlah kejadian kriminalitas Tahun 2024","yn":false,"t":"U","src":"Laporan Angka Kriminalitas 2024","ket":"POLRES","g":42},{"id":"PS51","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kepatuhan Sosial","item":"% Lansia yang yang melakukan pelanggaran hukum","rinc":"Jumlah Lansia yang melakukan pelanggaran hukum","yn":false,"t":"L","src":"Laporan Pelanggaran Hukum","ket":"POLRES","g":43},{"id":"PS52","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kepatuhan Sosial","item":"% Lansia yang yang melakukan pelanggaran hukum","rinc":"Jumlah Lansia","yn":false,"t":"L","src":"DTSEN","ket":"DTSEN","g":43},{"id":"PS53","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kepatuhan Sosial","item":"% disabilitas yang yang melakukan pelanggaran hukum","rinc":"Jumlah Disabilitas yang melakukan pelanggaran hukum","yn":false,"t":"D","src":"Laporan Pelanggaran Hukum","ket":"POLRES","g":44},{"id":"PS54","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kepatuhan Sosial","item":"% disabilitas yang yang melakukan pelanggaran hukum","rinc":"Jumlah disabilitas","yn":false,"t":"D","src":"DTSEN","ket":"POLRES","g":44},{"id":"PS55","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"Angka Partisipasi Murni","rinc":"Angka","yn":false,"t":"UDL","src":"BPS / Laporan Data Pendidikan (Disdik)","ket":"Rata-Rata APM SD, SMP, SMA","g":45},{"id":"PS56","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"Indeks Ketimpangan Gender","rinc":"Indeks","yn":false,"t":"UDL","src":"BPS / Laporan Indeks","ket":"Pengampu Urusan Pemberdayaan Perempuan dan Perlindungan Anak/ BPS","g":46},{"id":"PS57","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"% sekolah non SLB yang yang menerapkan kebijakan pendidikan inklusi","rinc":"Jumlah sekolah non SLB yang menerapkan kebijakan pendidikan inklusi","yn":false,"t":"D","src":"Hasil pendataan Dinas Pendidikan","ket":"Syarat wajib sekolah inklusi: memiliki guru pembimbing khusus (Permendikbud 70 2009)","g":47},{"id":"PS58","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"% sekolah non SLB yang yang menerapkan kebijakan pendidikan inklusi","rinc":"Jumlah sekolah non SLB","yn":false,"t":"D","src":"Laporan Data Pendidikan","ket":"Data dari DISDIK","g":47},{"id":"PS59","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"% siswa disabilitas yang bersekolah di sekolah non- SLB","rinc":"Jumlah siswa Disabilitas yang bersekolah di sekolah non-SLB","yn":false,"t":"D","src":"Laporan Data Pendidikan","ket":"Data dari DISDIK","g":48},{"id":"PS60","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"% siswa disabilitas yang bersekolah di sekolah non- SLB","rinc":"Jumlah penduduk Disabilitas usia sekolah (7-18 tahun)","yn":false,"t":"D","src":"Laporan Data Pendidikan","ket":"Data dari DISDIK","g":48},{"id":"PS61","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"% lansia yang menempati jabatan strategis di lembaga eksekutif","rinc":"Jumlah Lansia yang menempati jabatan strategis di lembaga eksekutif","yn":false,"t":"L","src":"Laporan Lansia Yang Tergabung Pada Jabatan Strategis pada Lembaga Eksekutif/ Struktural Maksimal Eselon 2 & 3 (Data Dari BKD)","ket":"Data dari BKD","g":49},{"id":"PS62","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"% lansia yang menempati jabatan strategis di lembaga eksekutif","rinc":"Total Jabatan Strategis di Lembaga Eksekutif","yn":false,"t":"L","src":"Total Jabatan Strategis Di Lembaga Eksekutif Maksimal (Eselon 2 & 3)","ket":"Data dari BKD","g":49},{"id":"PS63","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"% Penyandang Disabilitas yang menempati jabatan strategis di lembaga eksekutif","rinc":"Jumlah Penyandang Disabilitas yang menempati jabatan strategis di lembaga eksekutif","yn":false,"t":"D","src":"Laporan Disabilitas Yang Tergabung Pada Jabatan Strategis pada Lembaga Eksekutif/ Struktural Maksimal Eselon 2 & 3 (Data Dari BKD)","ket":"Data dari BKD","g":50},{"id":"PS64","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"% Penyandang Disabilitas yang menempati jabatan strategis di lembaga eksekutif","rinc":"Total Jabatan Strategis di Lembaga Eksekutif","yn":false,"t":"D","src":"Total Jabatan Strategis Di Lembaga Eksekutif (Maksimal Eselon 2 & 3)","ket":"Data dari BKD","g":50},{"id":"PS65","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"% masyarakat rentan sosial yang menempati jabatan strategis di lembaga eksekutif","rinc":"Jumlah masyarakat rentan sosial yang menempati jabatan strategis di lembaga eksekutif","yn":false,"t":"U","src":"Laporan PPKS yang Tergabung Pada Jabatan Strategis pada Lembaga Eksekutif/ Struktural Maksimal Eselon 2 & 3 (Data Dari BKD)","ket":"Data dari BKD","g":51},{"id":"PS66","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kesetaraan","item":"% masyarakat rentan sosial yang menempati jabatan strategis di lembaga eksekutif","rinc":"Total Jabatan Strategis di Lembaga Eksekutif","yn":false,"t":"U","src":"Total Jabatan Strategis Di Lembaga Eksekutif (Maksimal Eselon 2 & 3)","ket":"Data dari BKD","g":51},{"id":"PS67","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kualitas Hidup","item":"% masyarakat yang mengakses layanan polijiwa/pskiatater (depresi, stress, kecemasan)","rinc":"Jumlah pasien yang mengakses layanan polijiwa/ pskiatater (depresi, stress, kecemasan)","yn":false,"t":"U","src":"Rekapitulasi Data Pasien Dari Dinkes Yang Bersumber Dari Rumah Sakit & Puskesmas Yang Mengakses Klinik Jiwa / Psikiater","ket":"Data dari DINKES/ Rumah Sakit","g":52},{"id":"PS68","dim":"Peranan Sosial","bob":"31%","v":"Kohesi Sosial","ind":"Kualitas Hidup","item":"% masyarakat yang mengakses layanan polijiwa/pskiatater (depresi, stress, kecemasan)","rinc":"Jumlah Penduduk","yn":false,"t":"U","src":"Data BPS","ket":"BPS","g":52},{"id":"PS69","dim":"Peranan Sosial","bob":"31%","v":"Kelembagaan Inklusif","ind":"Kepastian hukum","item":"Nilai SPI KPK","rinc":"Angka","yn":false,"t":"UDL","src":"Nilai SPI KPK","ket":"Data dari INSPEKTORAT","g":53},{"id":"PS70","dim":"Peranan Sosial","bob":"31%","v":"Kelembagaan Inklusif","ind":"Kebijakan inklusif","item":"Terdapat Kebijakan (Perda) tentang Lansia","rinc":"Ya / Tidak","yn":true,"t":"L","src":"Data Perda Tentang Lansia Dari Bagian Hukum","ket":"Perda yang memuat/mengatur pemenuhan hak lansia","g":54},{"id":"PS71","dim":"Peranan Sosial","bob":"31%","v":"Kelembagaan Inklusif","ind":"Kebijakan inklusif","item":"Terdapat Kebijakan (Perda) tentang Disabilitas","rinc":"Ya / Tidak","yn":true,"t":"D","src":"Data Perda Tentang Disabilitas Dari Bagian Hukum","ket":"Perda yang memuat/mengatur pemenuhan hak disabilitas","g":55},{"id":"PS72","dim":"Peranan Sosial","bob":"31%","v":"Kelembagaan Inklusif","ind":"Insentif ekonomi","item":"Indeks Persaingan Usaha","rinc":"Indeks","yn":false,"t":"UDL","src":"Laporan Akhir Kajian Indeks Persaingan Usaha Di Indonesia (Komisi Pengawas Persaingan Usaha)","ket":"Nilai 1 provinsi sama","g":56},{"id":"PS73","dim":"Peranan Sosial","bob":"31%","v":"Kelembagaan Inklusif","ind":"Insentif ekonomi","item":"Indeks Tata Kelola Pengadaan","rinc":"Indeks","yn":false,"t":"UDL","src":"LKPP (Lembaga Kebijakan Pengadaan Barang/Jasa)","ket":"","g":57},{"id":"KE4","dim":"Keberdayaan Ekonomi","bob":"42%","v":"Partisipasi Ekonomi","ind":"Kemiskinan","item":"","rinc":"%","yn":false,"t":"UDL","src":"BPS kab/kota atau BPS Provinsi atau BPS Nasional","ket":"","g":58},{"id":"KE5","dim":"Keberdayaan Ekonomi","bob":"42%","v":"Partisipasi Ekonomi","ind":"PDRB ADHB","item":"","rinc":"dalam Milyar Rupiah","yn":false,"t":"UDL","src":"BPS kab/kota atau BPS Provinsi atau BPS Nasional","ket":"Atas Dasar Harga Berlaku | contoh: | empat triliyun --> 4,000 Milyar","g":59},{"id":"KE6","dim":"Keberdayaan Ekonomi","bob":"42%","v":"Partisipasi Ekonomi","ind":"Gini Rasio","item":"","rinc":"Indeks","yn":false,"t":"UDL","src":"BPS kab/kota atau BPS Provinsi atau BPS Nasional","ket":"","g":60},{"id":"KE7","dim":"Keberdayaan Ekonomi","bob":"42%","v":"Partisipasi Ekonomi","ind":"Jumlah Penduduk","item":"","rinc":"Jiwa","yn":false,"t":"UDL","src":"BPS kab/kota atau BPS Provinsi atau BPS Nasional","ket":"","g":61},{"id":"KE8","dim":"Keberdayaan Ekonomi","bob":"42%","v":"Partisipasi Ekonomi","ind":"Pengeluaran per Kapita","item":"","rinc":"dalam Ribu Rupiah","yn":false,"t":"UDL","src":"BPS kab/kota atau BPS Provinsi atau BPS Nasional","ket":"Pengeluaran per Kapita dalam satu (1) tahun | Menggunakan data rilis satu tahun, bukan rata-rata 12 bulan | contoh: | sepuluh juta --> 10,000 ribu rupiah","g":62}];
+const TG={U:'Umum',D:'Disabilitas',L:'Lansia'};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let data={}, profil={wilayah:'',tahun:''}, db=null, canWrite=true, downloads=null, mode='lokal';
+const LS='ikesos-rekap-v1', timers={}, inflight={};
+let flt={q:'',d:'',v:'',s:'',t:''};
+
+const num=v=>{if(v===undefined||v==='')return NaN;const x=parseFloat(String(v).replace(',','.'));return isNaN(x)?NaN:x};
+const filled=id=>{const d=data[id];return !!d&&d.n!==undefined&&String(d.n).trim()!==''};
+const hasEv=id=>{const d=data[id];return !!d&&!!(d.l||'').trim()};
+const sasaran=t=>t==='UDL'?'Semua sasaran':t.split('').map(c=>TG[c]).join(', ');
+const fmt=(x,dp=2)=>isNaN(x)||!isFinite(x)?'-':x.toLocaleString('id-ID',{maximumFractionDigits:dp});
+const toast=m=>{const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2600)};
+
+/* ---------- penyimpanan ---------- */
+function lsLoad(){try{const o=JSON.parse(localStorage.getItem(LS)||'{}');data=o.data||{};profil={...profil,...(o.profil||{})}}catch(e){}}
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify({data,profil}))}catch(e){}}
+function queue(id,patch){
+  data[id]={...(data[id]||{}),...patch};
+  refresh(id);
+  clearTimeout(timers[id]);
+  timers[id]=setTimeout(()=>flush(id),500);
+}
+async function flush(id){
+  if(inflight[id]){timers[id]=setTimeout(()=>flush(id),400);return}
+  const body={...data[id],at:Date.now()};data[id]=body;
+  if(!db){lsSave();return}
+  inflight[id]=true;
+  try{await db.doc('isian/'+id).set(body)}catch(e){
+    if(e&&e.code==='invalid_argument'){canWrite=false;applyPerm();toast('Akun ini tidak punya izin mengubah data')}
+    else toast('Gagal menyimpan, coba lagi')
+  }
+  inflight[id]=false;
+}
+function saveProfil(){
+  if(!db){lsSave();return}
+  db.doc('pengaturan/profil').set(profil).catch(()=>{});
+}
+
+/* ---------- ringkasan ---------- */
+function stats(list){const n=list.length;let f=0,e=0;list.forEach(r=>{if(filled(r.id))f++;if(filled(r.id)&&hasEv(r.id))e++});return{n,f,e}}
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+function renderSummary(){
+  const all=stats(ROWS);
+  const dims=[...new Set(ROWS.map(r=>r.dim))];
+  let h=`<div class="card"><div class="lbl">Butir terisi</div><div class="big">${all.f}<small> / ${all.n}</small></div><div class="bar"><i style="width:${pct(all.f,all.n)}%"></i></div></div>
+  <div class="card"><div class="lbl">Butir dengan bukti</div><div class="big">${all.e}<small> / ${all.n}</small></div><div class="bar okbar"><i style="width:${pct(all.e,all.n)}%"></i></div></div>`;
+  h+=`<div class="card"><div class="lbl">Per dimensi</div><div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">`+dims.map(d=>{const s=stats(ROWS.filter(r=>r.dim===d));const b=ROWS.find(r=>r.dim===d).bob;
+    return `<div><div style="display:flex;justify-content:space-between;gap:8px"><span>${esc(d)}${b?` <span class="chip">${b}</span>`:''}</span><span class="val">${s.f}/${s.n}</span></div><div class="bar" style="margin-top:4px"><i style="width:${pct(s.f,s.n)}%"></i></div></div>`}).join('')+`</div></div>`;
+  $('#cards').innerHTML=h;
+  const bySrc=groupSrc().filter(g=>g.n-g.f>0).sort((a,b)=>(b.n-b.f)-(a.n-a.f)).slice(0,6);
+  $('#todo').innerHTML=bySrc.length?`<div style="display:flex;flex-direction:column;gap:8px">`+bySrc.map(g=>`<div style="display:flex;justify-content:space-between;gap:12px"><button class="linkbtn" data-src="${esc(g.src)}">${esc(short(g.src))}</button><span class="val">${g.n-g.f} belum</span></div>`).join('')+`</div>`:`<div class="empty">Semua butir sudah terisi.</div>`;
+}
+const short=s=>s.length>70?s.slice(0,68)+'…':s;
+function groupSrc(){const m={};ROWS.forEach(r=>{const k=r.src||'(Tanpa sumber)';(m[k]=m[k]||[]).push(r)});return Object.entries(m).map(([src,l])=>({src,...stats(l)})).sort((a,b)=>a.src.localeCompare(b.src))}
+function renderOpd(){
+  $('#opdbody').innerHTML=groupSrc().map(g=>`<tr><td><button class="linkbtn" data-src="${esc(g.src)}">${esc(short(g.src))}</button></td><td class="n">${g.n}</td><td class="n">${g.f}</td><td class="n">${g.e}</td><td><div class="bar" style="margin:6px 0 0"><i style="width:${pct(g.f,g.n)}%"></i></div></td></tr>`).join('');
+}
+
+/* ---------- hasil hitung ---------- */
+function renderHasil(){
+  const groups={};ROWS.forEach(r=>{(groups[r.g]=groups[r.g]||[]).push(r)});
+  let h='';
+  Object.values(groups).forEach(g=>{
+    const a=g[0],it=a.item||a.ind;
+    if(g.length===2){
+      const x=num(data[g[0].id]?.n),y=num(data[g[1].id]?.n);
+      let res=NaN;
+      if(/^Rasio puskesmas/i.test(it)) res=NaN;
+      else if(/Penurunan/i.test(it)) res=(x-y)/x*100;
+      else res=x/y*100;
+      const note=/^Rasio puskesmas/i.test(it)?'<span class="chip">Rumus mengikuti pedoman</span>':(isNaN(res)?'':'%');
+      h+=`<tr><td>${esc(it)}</td><td>${esc(sasaran(a.t))}</td><td class="n">${fmt(x)}</td><td class="n">${fmt(y)}</td><td class="n">${/Rasio puskesmas/i.test(it)?note:fmt(res)+(isNaN(res)?'':' %')}</td></tr>`;
+    }else{
+      const x=num(data[a.id]?.n);
+      const yn=a.yn&&!isNaN(x)?(x===1?'Ya':'Tidak'):fmt(x);
+      h+=`<tr><td>${esc(it)}</td><td>${esc(sasaran(a.t))}</td><td class="n" colspan="2" style="text-align:right;color:var(--muted)">nilai langsung</td><td class="n">${yn}</td></tr>`;
+    }
+  });
+  $('#hasilbody').innerHTML=h;
+}
+
+/* ---------- daftar input ---------- */
+function filtered(){
+  const q=flt.q.trim().toLowerCase();
+  return ROWS.filter(r=>{
+    if(flt.d&&r.dim!==flt.d)return false;
+    if(flt.v&&r.v!==flt.v)return false;
+    if(flt.s&&(r.src||'(Tanpa sumber)')!==flt.s)return false;
+    const f=filled(r.id);
+    if(flt.t==='belum'&&f)return false;
+    if(flt.t==='terisi'&&!f)return false;
+    if(flt.t==='nobukti'&&!(f&&!hasEv(r.id)))return false;
+    if(q&&!(r.item+' '+r.ind+' '+r.rinc+' '+r.src+' '+r.v).toLowerCase().includes(q))return false;
+    return true;
+  });
+}
+function rowHtml(r){
+  const d=data[r.id]||{};
+  const input=r.yn
+    ?`<select id="n-${r.id}" data-id="${r.id}" data-k="n" aria-label="Nilai"><option value="">Pilih</option><option value="1"${String(d.n)==='1'?' selected':''}>Ya (1)</option><option value="0"${String(d.n)==='0'?' selected':''}>Tidak (0)</option></select>`
+    :`<input type="text" class="val" inputmode="decimal" id="n-${r.id}" data-id="${r.id}" data-k="n" placeholder="Nilai" value="${esc(d.n??'')}" aria-label="Nilai">`;
+  const lab=r.item||r.ind;
+  return `<div class="row" id="r-${r.id}">
+    <div class="info"><div class="item">${esc(lab)}</div>
+      <div class="rinc">${esc(r.rinc)}</div>
+      <div class="chips"><span class="chip">${esc(sasaran(r.t))}</span></div>
+      <div class="src">Sumber: ${esc(r.src||'-')}</div>
+      ${r.ket?`<div class="ket">${esc(r.ket)}</div>`:''}</div>
+    <div>${input}<div class="stat" id="s-${r.id}" style="margin-top:6px"></div></div>
+    <div class="ev"><input type="text" id="l-${r.id}" data-id="${r.id}" data-k="l" placeholder="Link bukti (Google Drive)" value="${esc(d.l??'')}" aria-label="Link bukti">
+      <input type="text" id="c-${r.id}" data-id="${r.id}" data-k="c" placeholder="Catatan (opsional)" value="${esc(d.c??'')}" aria-label="Catatan"></div>
+  </div>`;
+}
+function statusHtml(id){
+  const f=filled(id),e=hasEv(id),d=data[id];
+  let s=f?'<span class="chip ok">Terisi</span>':'<span class="chip warn">Belum diisi</span>';
+  if(f&&!e)s+=' <span class="chip bad">Tanpa bukti</span>';
+  if(f&&e)s+=' <span class="chip ok">Ada bukti</span>';
+  if(d&&d.at)s+=` <span>${new Date(d.at).toLocaleDateString('id-ID',{day:'numeric',month:'short'})}</span>`;
+  return s;
+}
+function renderList(){
+  const L=filtered();
+  $('#count').textContent=`${L.length} dari ${ROWS.length} butir`;
+  if(!L.length){$('#list').innerHTML='<div class="empty">Tidak ada butir yang cocok dengan filter.</div>';return}
+  let h='',pd='',pv='',pi='';
+  L.forEach(r=>{
+    if(r.dim!==pd){h+=`<div class="dimh">${esc(r.dim)}${r.bob?` (${r.bob})`:''}</div>`;pd=r.dim;pv='';pi=''}
+    if(r.v!==pv){h+=`<div class="varh">${esc(r.v)}</div>`;pv=r.v;pi=''}
+    if(r.ind!==pi&&r.item){h+=`<div class="indh">${esc(r.ind)}</div>`;pi=r.ind}
+    h+=rowHtml(r);
+  });
+  $('#list').innerHTML=h;
+  L.forEach(r=>{const s=$('#s-'+r.id);if(s)s.innerHTML=statusHtml(r.id)});
+  applyPerm();
+}
+function applyPerm(){document.querySelectorAll('#list input,#list select,#wilayah,#tahun').forEach(e=>e.disabled=!canWrite);
+  const b=$('#banner');b.hidden=canWrite;if(!canWrite)b.textContent='Akun ini hanya bisa melihat. Minta akses Contributor kepada pemilik halaman untuk mengisi data.'}
+
+/* ---------- refresh ---------- */
+function refresh(id){
+  if(id){const s=$('#s-'+id);if(s)s.innerHTML=statusHtml(id)}
+  renderSummary();renderOpd();renderHasil();
+  $('#count')&&($('#count').textContent=`${filtered().length} dari ${ROWS.length} butir`);
+}
+function syncInputs(){
+  document.querySelectorAll('#list [data-id]').forEach(el=>{
+    if(document.activeElement===el)return;
+    const v=(data[el.dataset.id]||{})[el.dataset.k]??'';
+    if(el.value!==String(v))el.value=v;
+  });
+  document.querySelectorAll('#list [id^="s-"]').forEach(el=>el.innerHTML=statusHtml(el.id.slice(2)));
+}
+
+/* ---------- ekspor ---------- */
+async function exportCsv(){
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const head=['ID','Dimensi','Variabel','Indikator','Item','Rincian','Sasaran','Sumber','Nilai','Link bukti','Catatan','Diperbarui'];
+  const lines=[head.map(q).join(',')];
+  ROWS.forEach(r=>{const d=data[r.id]||{};lines.push([r.id,r.dim,r.v,r.ind,r.item,r.rinc,sasaran(r.t),r.src,d.n,d.l,d.c,d.at?new Date(d.at).toISOString().slice(0,10):''].map(q).join(','))});
+  const name='rekap-ikesos'+(profil.wilayah?'-'+profil.wilayah.replace(/\W+/g,'-').toLowerCase():'')+'.csv';
+  if(!downloads){toast('Unduhan tidak tersedia di tampilan ini');return}
+  try{await downloads.save({filename:name,data:'﻿'+lines.join('\r\n')});toast('Rekap tersimpan')}
+  catch(e){if(!e||e.code!=='declined')toast('Unduhan gagal')}
+}
+
+/* ---------- event ---------- */
+function setTab(t){
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));
+  document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);
+  if(t==='input')renderList();
+}
+document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setTab(b.dataset.tab)});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-src]');if(!b)return;flt={q:'',d:'',v:'',s:b.dataset.src,t:''};syncFilters();setTab('input')});
+$('#list').addEventListener('input',e=>{const el=e.target;if(el.dataset.id&&el.tagName==='INPUT'){queue(el.dataset.id,{[el.dataset.k]:el.value})}});
+$('#list').addEventListener('change',e=>{const el=e.target;if(el.dataset.id&&el.tagName==='SELECT')queue(el.dataset.id,{[el.dataset.k]:el.value})});
+['q','fd','fv','fs','ft'].forEach(id=>$('#'+id).addEventListener('input',()=>{flt={q:$('#q').value,d:$('#fd').value,v:$('#fv').value,s:$('#fs').value,t:$('#ft').value};renderList()}));
+$('#wilayah').addEventListener('input',e=>{profil.wilayah=e.target.value;clearTimeout(saveProfil.h);saveProfil.h=setTimeout(saveProfil,600)});
+$('#tahun').addEventListener('input',e=>{profil.tahun=e.target.value;clearTimeout(saveProfil.h);saveProfil.h=setTimeout(saveProfil,600)});
+$('#export').addEventListener('click',exportCsv);
+function opts(sel,list,all){$(sel).innerHTML=`<option value="">${all}</option>`+list.map(x=>`<option value="${esc(x)}">${esc(short(x))}</option>`).join('')}
+function syncFilters(){$('#q').value=flt.q;$('#fd').value=flt.d;$('#fv').value=flt.v;$('#fs').value=flt.s;$('#ft').value=flt.t}
+opts('#fd',[...new Set(ROWS.map(r=>r.dim))],'Semua dimensi');
+opts('#fv',[...new Set(ROWS.map(r=>r.v))],'Semua variabel');
+opts('#fs',[...new Set(ROWS.map(r=>r.src||'(Tanpa sumber)'))].sort(),'Semua sumber');
+
+/* ---------- mulai ---------- */
+function paintProfil(){if(document.activeElement!==$('#wilayah'))$('#wilayah').value=profil.wilayah||'';if(document.activeElement!==$('#tahun'))$('#tahun').value=profil.tahun||''}
+lsLoad();paintProfil();refresh();
+(async()=>{
+  const C=window.claude;if(!C||!C.use)return;
+  try{downloads=await C.use('downloads')}catch(e){}
+  try{const u=await C.use('user');if(u){const w=u.can&&u.can('data.write');if(w===false){canWrite=false;applyPerm()}}}catch(e){}
+  try{db=await C.use('db')}catch(e){}
+  if(!db)return;
+  mode='bersama';
+  db.collection('isian').onSnapshot(snap=>{
+    const next={};snap.docs.forEach(d=>next[d.id]=d.data());
+    Object.keys(timers).forEach(id=>{if(data[id]&&(inflight[id]||timers[id]))next[id]=next[id]&&(next[id].at||0)>(data[id].at||0)?next[id]:data[id]});
+    data=next;refresh();syncInputs();
+  },()=>{});
+  db.doc('pengaturan/profil').onSnapshot(s=>{if(s.exists){profil={...profil,...s.data()};paintProfil()}},()=>{});
+})();
+</script>
+
+</body></html>
